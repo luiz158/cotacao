@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="_template.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="fornecedorId" value="#{fornecedorBean.fornecedorId}" />
+		<f:viewAction action="#{fornecedorBean.carregarFornecedorPelaId}"
+			if="#{param.fornecedorId != null}" />
+	</f:metadata>
+
+	<ui:define name="titulo">
+		<p:outputPanel>Novo Fornecedor</p:outputPanel>
+	</ui:define>
+
+	<ui:define name="conteudo">
+		<h:form>
+
+			<p:messages id="messages" />
+
+			<p:fieldset legend="Dados do Fornecedor">
+				<div class="ui-fluid">
+					<p:panelGrid columns="4" columnClasses="ui-grid-col-2,ui-grid-col-6,ui-grid-col-1,ui-grid-col-3" 
+							layout="grid" styleClass="ui-panelgrid-blank">
+						
+						<p:outputLabel value="Razão Social:" for="fornecedor"/>
+						<p:inputText id="fornecedor" value="#{fornecedorBean.fornecedor.nome}"
+							required="true" requiredMessage="A Razão Social é obrigatória.">
+							<f:ajax event="blur" render="messages" />
+						</p:inputText>
+
+						<p:outputLabel value="CNPJ:" for="cnpj"/>
+						<p:inputMask id="cnpj" value="#{fornecedorBean.fornecedor.cnpj}"
+							required="true" requiredMessage="O CNPJ é obrigatório."
+							mask="99.999.999/9999-99">
+							<f:ajax event="blur" render="messages" />
+						</p:inputMask>
+					</p:panelGrid>
+					
+					<p:panelGrid columns="4" columnClasses="ui-grid-col-2,ui-grid-col-4,ui-grid-col-2,ui-grid-col-4" 
+						layout="grid" styleClass="ui-panelgrid-blank">		
+						<p:outputLabel value="Logradouro:" for="logradouro"/>
+						<p:inputText id="logradouro" value="#{fornecedorBean.endereco.logradouro}"/>
+						
+						<p:outputLabel value="Complemento:" for="complemento"/>
+						<p:inputText id="complemento" value="#{fornecedorBean.endereco.complemento}"/>
+						
+						<p:outputLabel value="Número:" for="numero"/>
+						<p:inputText id="numero" value="#{fornecedorBean.endereco.numero}"/>
+						
+						<p:outputLabel value="Bairro:" for="bairro" />
+						<p:inputText id="bairro" value="#{fornecedorBean.endereco.bairro}" />
+					</p:panelGrid>
+					
+					<p:panelGrid columns="6" columnClasses="ui-grid-col-2,ui-grid-col-2,ui-grid-col-1,ui-grid-col-3,ui-grid-col-1,ui-grid-col-3" 
+						layout="grid" styleClass="ui-panelgrid-blank">
+						<p:outputLabel value="Estado:" for="estado" />
+						<p:selectOneMenu value="#{fornecedorBean.estadoId}" id="estado" required="true">
+						<f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+						<f:selectItems value="#{estadoBean.estados}" var="estado"
+							itemLabel="#{estado.nome}" itemValue="#{estado.id}"/>
+							<f:ajax render="cidade"/>
+				        </p:selectOneMenu>
+				        	
+				        <p:outputLabel value="Cidade:" for="cidade" />
+						<p:selectOneMenu value="#{fornecedorBean.cidadeId}" id="cidade" required="true">
+						<f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+						<f:selectItems value="#{fornecedorBean.cidades}" var="cidade"
+							itemLabel="#{cidade.nome}" itemValue="#{cidade.id}"/>
+				        </p:selectOneMenu>	
+				        <p:outputLabel value="CEP:" for="cep"/>
+						<p:inputMask id="cep" value="#{fornecedorBean.fornecedor.endereco.cep}"
+							required="true" requiredMessage="O CEP é obrigatório."
+							mask="99.999-999">
+							<f:ajax event="blur" render="messages" />
+						</p:inputMask>
+					</p:panelGrid>
+					
+					<p:panelGrid columns="5" columnClasses="ui-grid-col-2,ui-grid-col-2,ui-grid-col-2,ui-grid-col-2,ui-grid-col-4" 
+					layout="grid" styleClass="ui-panelgrid-blank">
+							<p:outputLabel value="Telefone:" for="telefone"/>
+							<p:inputMask id="telefone" value="#{fornecedorBean.telefone.telefone}"
+								mask="(99) 9999-9999">
+							</p:inputMask>
+							<p:commandButton action="#{fornecedorBean.gravarTelefone}" id="addTelefone" 
+								process="@this telefone" update="tabelaTelefones" icon="fa fa-plus" render="telefone"/>
+								
+							<p:outputLabel value="Contato:" for="contato" />
+							<p:inputText id="contato" value="#{fornecedorBean.fornecedor.contato}" />
+		   			</p:panelGrid>
+					<div class="ui-grid ui-grid-responsive">
+  							<div class="ui-grid-row">
+      							<div class="ui-grid-col-12">
+								<p:dataList value="#{fornecedorBean.telefoneDoFornecedor}" var="telefone"
+									id="tabelaTelefones" type="definition" emptyMessage="Nenhum telefone">
+									<f:facet name="header">
+				            			Telefones
+				        				</f:facet>
+				        			<p:panelGrid columns="2" columnClasses="ui-grid-col-2,ui-grid-col-2" layout="grid" styleClass="ui-panelgrid-blank">
+										<p:commandButton value="Remover" icon="fa fa-fw fa-remove"
+											action="#{fornecedorBean.removerTelefoneDoFornecedor(telefone)}"
+											update="tabelaTelefones" process="@this" />
+					       					#{telefone.telefone}
+				       				</p:panelGrid>
+			   					</p:dataList>
+		   					</div>
+					    </div>
+					</div>
+				</div>
+			</p:fieldset>
+			
+			</h:form>
+	</ui:define>
+</ui:composition>
+
+</html>
