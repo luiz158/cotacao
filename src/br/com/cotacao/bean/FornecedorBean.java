@@ -3,8 +3,8 @@ package br.com.cotacao.bean;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 
 import br.com.cotacao.dao.DAO;
 import br.com.cotacao.modelo.Cidade;
@@ -12,7 +12,7 @@ import br.com.cotacao.modelo.Endereco;
 import br.com.cotacao.modelo.Fornecedor;
 import br.com.cotacao.modelo.Telefone;
 
-@ManagedBean
+@Named
 @ViewScoped
 public class FornecedorBean implements Serializable {
 

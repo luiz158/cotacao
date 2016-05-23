@@ -1,9 +1,10 @@
 package br.com.cotacao.bean;
 
+import java.io.Serializable;
 import java.util.List;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 import javax.persistence.EntityManager;
 
 import br.com.cotacao.dao.DAO;
@@ -11,9 +12,11 @@ import br.com.cotacao.dao.JPAUtil;
 import br.com.cotacao.modelo.Cidade;
 import br.com.cotacao.modelo.Estado;
 
-@ManagedBean
+@Named
 @ViewScoped
-public class CidadeBean {
+public class CidadeBean implements Serializable{
+	
+	private static final long serialVersionUID = 1L;
 	
 	private Estado estado = new Estado();
 	private EntityManager manager = new JPAUtil().getEntityManager();

@@ -1,16 +1,19 @@
 package br.com.cotacao.bean;
 
+import java.io.Serializable;
 import java.util.List;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 
 import br.com.cotacao.dao.DAO;
 import br.com.cotacao.modelo.Produto;
 
-@ManagedBean
+@Named
 @ViewScoped
-public class ProdutoBean {
+public class ProdutoBean implements Serializable{
+	
+	private static final long serialVersionUID = 1L;
 
 	private Produto produto = new Produto();
 	
