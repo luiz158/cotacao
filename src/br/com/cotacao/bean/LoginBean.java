@@ -29,7 +29,7 @@ public class LoginBean {
 		if (existe) {
 			
 			context.getExternalContext().getSessionMap().put("usuarioLogado", this.usuario);
-			return "livro?faces-redirect=true";
+			return "produtos?faces-redirect=true";
 		}
 
 		context.getExternalContext().getFlash().setKeepMessages(true);

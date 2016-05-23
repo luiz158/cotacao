@@ -8,18 +8,23 @@
 		
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
 		
-		<class>br.com.cotacao.modelo.Livro</class>
-		<class>br.com.cotacao.modelo.Autor</class>
 		<class>br.com.cotacao.modelo.Usuario</class>
+		<class>br.com.cotacao.modelo.Estado</class>
+		<class>br.com.cotacao.modelo.Cidade</class>
+		<class>br.com.cotacao.modelo.Endereco</class>
+		<class>br.com.cotacao.modelo.Fornecedor</class>
+		<class>br.com.cotacao.modelo.Produto</class>
+		<class>br.com.cotacao.modelo.Telefone</class>
 
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />
-			<property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost/livrariadb" />
+			<property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost/cotacao" />
 			<property name="javax.persistence.jdbc.user" value="root" />
 			<property name="javax.persistence.jdbc.password" value="root" />
 
 			<property name="hibernate.hbm2ddl.auto" value="update" />
-			<property name="hibernate.show_sql" value="false" />
+			<property name="hibernate.show_sql" value="true" />
+			<property name="hibernate.format_sql" value="true" />
 			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5InnoDBDialect" />
 		</properties>
 	</persistence-unit>
