@@ -3,14 +3,19 @@ package br.com.cotacao.bean;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 
-import br.com.cotacao.dao.DAO;
 import br.com.cotacao.modelo.Cidade;
-import br.com.cotacao.modelo.Endereco;
+import br.com.cotacao.modelo.Estado;
 import br.com.cotacao.modelo.Fornecedor;
 import br.com.cotacao.modelo.Telefone;
+import br.com.cotacao.repositorio.CidadeDAO;
+import br.com.cotacao.repositorio.EstadoDAO;
+import br.com.cotacao.repositorio.FornecedorDAO;
+import br.com.cotacao.repositorio.TelefoneDAO;
 
 @Named
 @ViewScoped
@@ -18,115 +23,55 @@ public class FornecedorBean implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private Fornecedor fornecedor = new Fornecedor();
-	private Telefone telefone = new Telefone();
-	private Endereco endereco;
-	
-	private Integer fornecedorId;
-	private List<Fornecedor> fornecedores;
-	private List<Cidade> cidades;
-	
-	private Integer telefoneId;
-	private Integer enderecoId;
-	private Integer estadoId;
-	private Integer cidadeId;
-	
+	@Inject
+	private FornecedorDAO fornecedorDAO;
+	@Inject
+	private EstadoDAO estadoDAO;
+	@Inject
+	private CidadeDAO cidadeDAO;
+	@Inject
+	private TelefoneDAO telefoneDAO;
 
-	public List<Cidade> getCidades() {
-		CidadeBean cidadeBean = new CidadeBean();
-		if(this.estadoId != null){
-				this.cidades = cidadeBean.porEstado(this.estadoId);
+	private Fornecedor fornecedor;
+	private Estado estado;
+	private Telefone telefone;
+
+	private List<Estado> todosEstados;
+	private List<Cidade> cidadesPorEstado;
+	private List<Fornecedor> todosFornecedores;
+
+	public void inicializar() {
+		fornecedor = new Fornecedor();
+		estado = null;
+		todosFornecedores = fornecedorDAO.todosFornecedoresCompleto();
+
+		if (!FacesContext.getCurrentInstance().isPostback()) {
+			todosEstados = estadoDAO.todos();
 		}
-		return cidades;
-	}
-	public Integer getCidadeId() {
-		return cidadeId;
-	}
-	public void setCidadeId(Integer cidadeId) {
-		this.cidadeId = cidadeId;
-	}
-	public Endereco getEndereco() {
-		return endereco;
-	}
-	public void setEndereco(Endereco endereco) {
-		this.endereco = endereco;
-	}
-	public Integer getEstadoId() {
-		return estadoId;
-	}
-	public void setEstadoId(Integer estadoId) {
-		this.estadoId = estadoId;
-	}
-	public void setTelefoneId(Integer telefoneId) {
-		this.telefoneId = telefoneId;
-	}
-	public Integer getTelefoneId() {
-		return telefoneId;
-	}
-	
-	public void setEnderecoId(Integer enderecoId){
-		this.enderecoId = enderecoId;
-	}
-	public Integer getEnderecoId(){
-		return enderecoId;
 	}
 
-	public Fornecedor getFornecedor() {
-		return fornecedor;
-	}
-	public Integer getFornecedorId() {
-		return fornecedorId;
-	}
-	public void setFornecedorId(Integer fornecedorId) {
-		this.fornecedorId = fornecedorId;
-	}
-	public List<Fornecedor> getFornecedores() {
-		DAO<Fornecedor> dao = new DAO<Fornecedor>(Fornecedor.class);
-		
-		if(this.fornecedores == null){
-			this.fornecedores = dao.listaTodos();
+	public void onEstadoChange() {
+		cidadesPorEstado = null;
+		if (estado != null) {
+			cidadesPorEstado = cidadeDAO.porEstado(estado);
 		}
-		return fornecedores;
 	}
 
-	public List<Telefone> getTelefoneDoFornecedor() {
-		return this.fornecedor.getTelefones();
+	public void remover(Fornecedor fornecedor) {
+		System.out.println("Removendo fornecedor " + fornecedor.getNome());
+		fornecedorDAO.remove(fornecedor);
 	}
 
 	public void gravarTelefone() {
-
 		if (this.telefone.getId() == null) {
-			new DAO<Telefone>(Telefone.class).adiciona(this.telefone);
+			telefoneDAO.adicionar(this.telefone);
 		} else {
-			new DAO<Telefone>(Telefone.class).atualiza(this.telefone);
+			telefoneDAO.atualiza(this.telefone);
 		}
 		this.fornecedor.adicionaTelefone(telefone);
-		System.out.println("Telefone do Fornecedor: " + telefone.getTelefone());
+		System.out.println("Telefone dicionado: " + telefone.getTelefone());
 
 		this.telefone = new Telefone();
-	}
-
-	public void gravar() {
-		System.out.println("Gravando fornecedor " + this.fornecedor.getNome());
-
-		/**
-		if (fornecedor.getTelefones().isEmpty()) {
-			FacesContext.getCurrentInstance().addMessage("autor",
-					new FacesMessage("Livro deve ter pelo menos um Autor."));
-			return;
-		}
-		*/
-		
-		DAO<Fornecedor> dao = new DAO<Fornecedor>(Fornecedor.class);
-		
-		if (this.fornecedor.getId() == null) {
-			dao.adiciona(this.fornecedor);
-			this.fornecedores = dao.listaTodos();
-		} else {
-			dao.atualiza(this.fornecedor);
-		}
-
-		this.fornecedor = new Fornecedor();
 	}
 
 	public void carregar(Fornecedor fornecedor) {
@@ -134,30 +79,71 @@ public class FornecedorBean implements Serializable {
 		this.fornecedor = fornecedor;
 	}
 
-	public void remover(Fornecedor fornecedor) {
-		System.out.println("Removendo fornecedor " + fornecedor.getNome());
-		new DAO<Fornecedor>(Fornecedor.class).remove(fornecedor);
-	}
-
 	public void removerTelefoneDoFornecedor(Telefone telefone) {
 		this.fornecedor.removeTelefone(telefone);
 	}
 
-	/** criar metodo para salvar os telefones
-	public String formAutor() {
-		System.out.println("Chamanda do formulário do Autor.");
-		return "autor?faces-redirect=true";
+	public List<Telefone> getTelefoneDoFornecedor() {
+		return this.fornecedor.getTelefones();
 	}
-	*/
 
-	public void carregarFornecedorPelaId() {
-		this.fornecedor = new DAO<Fornecedor>(Fornecedor.class).buscaPorId(fornecedorId);
+	public void gravar() {
+		System.out.println("Gravando fornecedor " + this.fornecedor.getNome());
+		if (this.fornecedor.getId() == null) {
+			fornecedorDAO.adiciona(this.fornecedor);
+			this.todosFornecedores = fornecedorDAO.todosFornecedoresCompleto();
+		} else {
+			fornecedorDAO.atualiza(this.fornecedor);
+		}
+		inicializar();
 	}
+
+	public Fornecedor getFornecedor() {
+		return fornecedor;
+	}
+
+	public void setFornecedor(Fornecedor fornecedor) {
+		this.fornecedor = fornecedor;
+	}
+
+	public Estado getEstado() {
+		return estado;
+	}
+
+	public void setEstado(Estado estado) {
+		this.estado = estado;
+	}
+
 	public Telefone getTelefone() {
 		return telefone;
 	}
+
 	public void setTelefone(Telefone telefone) {
 		this.telefone = telefone;
 	}
-	
+
+	public List<Estado> getTodosEstados() {
+		return todosEstados;
+	}
+
+	public void setTodosEstados(List<Estado> todosEstados) {
+		this.todosEstados = todosEstados;
+	}
+
+	public List<Cidade> getCidadesPorEstado() {
+		return cidadesPorEstado;
+	}
+
+	public void setCidadesPorEstado(List<Cidade> cidadesPorEstado) {
+		this.cidadesPorEstado = cidadesPorEstado;
+	}
+
+	public List<Fornecedor> getTodosFornecedores() {
+		return todosFornecedores;
+	}
+
+	public void setTodosFornecedores(List<Fornecedor> todosFornecedores) {
+		this.todosFornecedores = todosFornecedores;
+	}
+
 }

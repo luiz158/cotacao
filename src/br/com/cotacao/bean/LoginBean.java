@@ -7,8 +7,8 @@ import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
-import br.com.cotacao.dao.UsuarioDao;
 import br.com.cotacao.modelo.Usuario;
+import br.com.cotacao.repositorio.UsuarioDAO;
 
 @Named
 @ViewScoped
@@ -28,7 +28,7 @@ public class LoginBean implements Serializable{
 		
 		FacesContext context = FacesContext.getCurrentInstance();
 		
-		boolean existe = new UsuarioDao().existe(this.usuario);
+		boolean existe = new UsuarioDAO().existe(this.usuario);
 
 		if (existe) {
 			

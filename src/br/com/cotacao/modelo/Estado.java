@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.List;
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
@@ -14,14 +13,14 @@ public class Estado implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
 	@Id
-	private Integer id;
+	private Long id;
 	private String nome;
 	private String sigla;
 	
-	@OneToMany(mappedBy="estado", fetch=FetchType.EAGER)
+	@OneToMany(mappedBy="estado")
 	private List<Cidade> cidades;
 	
-	public Integer getId() {
+	public Long getId() {
 		return id;
 	}
 	

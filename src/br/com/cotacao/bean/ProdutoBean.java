@@ -4,10 +4,11 @@ import java.io.Serializable;
 import java.util.List;
 
 import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 
-import br.com.cotacao.dao.DAO;
 import br.com.cotacao.modelo.Produto;
+import br.com.cotacao.repositorio.ProdutoDAO;
 
 @Named
 @ViewScoped
@@ -18,18 +19,21 @@ public class ProdutoBean implements Serializable{
 	private Produto produto = new Produto();
 	
 	private Integer produtoId;
+	
+	@Inject
+	private ProdutoDAO dao;
 
 	public List<Produto> getProdutos() {
-		return new DAO<Produto>(Produto.class).listaTodos();
+		return dao.listaTodos();
 	}
 
 	public String gravar() {
 		System.out.println("Gravando produto " + this.produto.getDescricao());
 
 		if (this.produto.getId() == null) {
-			new DAO<Produto>(Produto.class).adiciona(this.produto);
+			dao.adiciona(this.produto);
 		} else {
-			new DAO<Produto>(Produto.class).atualiza(this.produto);
+			dao.atualiza(this.produto);
 		}
 
 		this.produto = new Produto();
@@ -44,11 +48,11 @@ public class ProdutoBean implements Serializable{
 
 	public void remover(Produto produto) {
 		System.out.println("Removendo produto");
-		new DAO<Produto>(Produto.class).remove(produto);
+		dao.remove(produto);
 	}
 
 	public void carregarProdutoPelaId() {
-		this.produto = new DAO<Produto>(Produto.class).buscaPorId(produtoId);
+		this.produto = dao.buscaPorId(produtoId);
 	}
 
 	public Produto getProduto() {
